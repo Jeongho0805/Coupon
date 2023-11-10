@@ -1,0 +1,31 @@
+@font-face {
+    font-family: 'SOYOMapleBoldTTF';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2310@1.0/SOYOMapleBoldTTF.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+body {
+    font-family: 'SOYOMapleBoldTTF', sans-serif;
+    color: #343434;
+    background-color: bisque;
+}
+
+#main-wrapper {
+    margin: 50px;
+    text-align: center;
+    font-size: 10px;
+}
+
+#coupon-button {
+    margin-top: 5rem;
+    font-size: 20px;
+    border: 5px white solid;
+    background-color: salmon;
+    color: white;
+    border-radius: 50%;
+    padding: 5rem;
+    cursor: pointer;
+    font-weight: bold;
+
+}
