@@ -18,6 +18,6 @@ public class Member {
 
     private String account;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<Coupon> coupons = new ArrayList<>();
 }
