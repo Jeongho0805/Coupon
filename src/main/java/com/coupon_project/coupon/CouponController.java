@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class CouponController {
 
     private final MemberService memberService;
-    private final CouponSyncService couponSyncService;
+    private final CouponService couponService;
 
     @PostMapping
     public ResponseEntity<Object> issueCoupon(@CookieValue(name = "account") String account) {
-        String couponCode = couponSyncService.issueCouponSync(account);
+        Member findMember = memberService.getMember(account);
+        String couponCode = couponService.issueCoupon(findMember);
         return ResponseEntity.ok().body("쿠폰 발급이 완료되었습니다. \n 쿠폰 번호 = " + couponCode);
     }
 }
