@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.UUID;
 
 @Slf4j
@@ -18,7 +17,7 @@ public class CouponService {
 
     @Transactional
     public String issueCoupon(Member member) {
-        long count = couponRepository.count();
+        long count = couponRepository.countWithPessimisticLock();
         if (count >= MAX_COUNT) {
             throw new CouponException("모든 쿠폰이 소진되었습니다.");
         }

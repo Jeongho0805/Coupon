@@ -2,7 +2,6 @@ package com.coupon_project;
 
 import com.coupon_project.coupon.CouponRepository;
 import com.coupon_project.coupon.CouponService;
-import com.coupon_project.coupon.CouponSyncService;
 import com.coupon_project.member.Member;
 import com.coupon_project.member.MemberRepository;
 import org.assertj.core.api.Assertions;
@@ -18,7 +17,10 @@ import java.util.concurrent.TimeUnit;
 public class MultiThreadTest {
 
     @Autowired
-    private CouponSyncService couponSyncService;
+    private CouponService couponService;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private CouponRepository couponRepository;
@@ -29,8 +31,8 @@ public class MultiThreadTest {
         ExecutorService service = Executors.newFixedThreadPool(30);
 
         for (long i=1; i<=1000; i++) {
-            String account = "test" + i;
-            service.submit(() -> couponSyncService.issueCouponSync(account));
+            Member member = memberRepository.findById(i).orElseGet(null);
+            service.submit(() -> couponService.issueCoupon(member));
         }
         service.shutdown();
         service.awaitTermination(1, TimeUnit.MINUTES);
