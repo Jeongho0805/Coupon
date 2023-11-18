@@ -2,6 +2,7 @@ package com.coupon_project;
 
 import com.coupon_project.coupon.CouponRepository;
 import com.coupon_project.coupon.CouponService;
+import com.coupon_project.coupon.CouponServiceV2;
 import com.coupon_project.member.Member;
 import com.coupon_project.member.MemberRepository;
 import org.assertj.core.api.Assertions;
@@ -18,6 +19,9 @@ public class MultiThreadTest {
 
     @Autowired
     private CouponService couponService;
+
+    @Autowired
+    private CouponServiceV2 couponServiceV2;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -39,5 +43,22 @@ public class MultiThreadTest {
 
         Long couponCount = couponRepository.count();
         Assertions.assertThat(couponCount).isEqualTo(100);
+    }
+
+    @Test
+    @DisplayName("트랜잭션 범위 다르게 테스트")
+    void CouponTest2() throws InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(30);
+
+        for (long i=1; i<=1000; i++) {
+            Member member = memberRepository.findById(i).orElseGet(null);
+            service.submit(() -> couponServiceV2.issueCoupon(member));
+        }
+        service.shutdown();
+        service.awaitTermination(1, TimeUnit.MINUTES);
+
+        Long couponCount = couponRepository.count();
+        Assertions.assertThat(couponCount).isEqualTo(100);
+
     }
 }
