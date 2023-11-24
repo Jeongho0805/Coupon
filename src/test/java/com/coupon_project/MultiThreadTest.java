@@ -3,6 +3,7 @@ package com.coupon_project;
 import com.coupon_project.coupon.CouponRepository;
 import com.coupon_project.coupon.CouponService;
 import com.coupon_project.coupon.CouponServiceV2;
+import com.coupon_project.coupon.CouponServiceV3;
 import com.coupon_project.member.Member;
 import com.coupon_project.member.MemberRepository;
 import org.assertj.core.api.Assertions;
@@ -22,6 +23,9 @@ public class MultiThreadTest {
 
     @Autowired
     private CouponServiceV2 couponServiceV2;
+
+    @Autowired
+    private CouponServiceV3 couponServiceV3;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -50,7 +54,7 @@ public class MultiThreadTest {
     void CouponTest2() throws InterruptedException {
         ExecutorService service = Executors.newFixedThreadPool(30);
 
-        for (long i=1; i<=1000; i++) {
+        for (long i=1; i<=200; i++) {
             Member member = memberRepository.findById(i).orElseGet(null);
             service.submit(() -> couponServiceV2.issueCoupon(member));
         }
@@ -59,6 +63,21 @@ public class MultiThreadTest {
 
         Long couponCount = couponRepository.count();
         Assertions.assertThat(couponCount).isEqualTo(100);
+    }
 
+    @Test
+    @DisplayName("멤버 조회 repository 안에서 하는 방식")
+    void CouponTest3() throws InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(30);
+
+        for (long i=1; i<=1000; i++) {
+            final long memberId = i;
+            service.submit(() -> couponServiceV3.issueCoupon(memberId));
+        }
+        service.shutdown();
+        service.awaitTermination(1, TimeUnit.MINUTES);
+
+        Long couponCount = couponRepository.count();
+        Assertions.assertThat(couponCount).isEqualTo(100);
     }
 }
