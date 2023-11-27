@@ -12,5 +12,4 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT count(c) FROM Coupon c")
     long countWithPessimisticLock();
-
 }

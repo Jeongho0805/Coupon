@@ -2,10 +2,7 @@ package com.coupon_project.coupon;
 
 import lombok.Getter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -17,7 +14,11 @@ public class CouponInventory {
 
     private int remainingCoupons;
 
+    @Version
+    private Integer version;
+
     public void plusCount() {
         this.remainingCoupons++;
     }
+
 }

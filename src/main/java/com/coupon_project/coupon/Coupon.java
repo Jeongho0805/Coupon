@@ -2,7 +2,6 @@ package com.coupon_project.coupon;
 
 import com.coupon_project.member.Member;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;

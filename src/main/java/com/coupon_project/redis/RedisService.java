@@ -12,12 +12,11 @@ public class RedisService {
 
     private final StringRedisTemplate redisTemplate;
 
-    // ZADD: Sorted Set에 요소 추가
     public void addToSortedSet(String value, ZonedDateTime dateTime) {
-        redisTemplate.opsForZSet().add("queue", value, dateTime.toEpochSecond());
+        long score = dateTime.toInstant().toEpochMilli();
+        redisTemplate.opsForZSet().add("queue", value, score);
     }
 
-    // ZRANK: 요소의 순위 반환
     public Long getRank(String value) {
         return redisTemplate.opsForZSet().rank("queue", value);
     }

@@ -1,12 +1,9 @@
 package com.coupon_project;
 
-import com.coupon_project.member.Member;
 import com.coupon_project.redis.RedisService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,6 +27,5 @@ public class RedisQueueTest {
         }
         service.shutdown();
         service.awaitTermination(1, TimeUnit.MINUTES);
-
     }
 }

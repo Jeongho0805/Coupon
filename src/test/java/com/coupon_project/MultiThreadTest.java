@@ -1,9 +1,6 @@
 package com.coupon_project;
 
-import com.coupon_project.coupon.CouponRepository;
-import com.coupon_project.coupon.CouponService;
-import com.coupon_project.coupon.CouponServiceV2;
-import com.coupon_project.coupon.CouponServiceV3;
+import com.coupon_project.coupon.*;
 import com.coupon_project.member.Member;
 import com.coupon_project.member.MemberRepository;
 import org.assertj.core.api.Assertions;
@@ -26,6 +23,9 @@ public class MultiThreadTest {
 
     @Autowired
     private CouponServiceV3 couponServiceV3;
+
+    @Autowired
+    private CouponServiceV4 couponServiceV4;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -88,7 +88,7 @@ public class MultiThreadTest {
 
         for (long i=1; i<=200; i++) {
             Member member = memberRepository.findById(i).orElseGet(null);
-            service.submit(() -> couponService.makeCoupon(member));
+            service.submit(() -> couponServiceV4.issueCoupon(member));
         }
         service.shutdown();
         service.awaitTermination(1, TimeUnit.MINUTES);

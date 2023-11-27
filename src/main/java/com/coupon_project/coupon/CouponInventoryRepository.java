@@ -9,4 +9,6 @@ public interface CouponInventoryRepository extends JpaRepository<CouponInventory
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT c FROM CouponInventory c WHERE c.id=1")
     CouponInventory countWithPessimisticLock();
+
+    CouponInventory findCouponInventoryById(Long id);
 }
