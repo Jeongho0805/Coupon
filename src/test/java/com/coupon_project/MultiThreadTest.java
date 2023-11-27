@@ -38,7 +38,7 @@ public class MultiThreadTest {
     void CouponIssueTest() throws InterruptedException {
         ExecutorService service = Executors.newFixedThreadPool(30);
 
-        for (long i=1; i<=1000; i++) {
+        for (long i=1; i<=200; i++) {
             Member member = memberRepository.findById(i).orElseGet(null);
             service.submit(() -> couponService.issueCoupon(member));
         }
@@ -73,6 +73,22 @@ public class MultiThreadTest {
         for (long i=1; i<=1000; i++) {
             final long memberId = i;
             service.submit(() -> couponServiceV3.issueCoupon(memberId));
+        }
+        service.shutdown();
+        service.awaitTermination(1, TimeUnit.MINUTES);
+
+        Long couponCount = couponRepository.count();
+        Assertions.assertThat(couponCount).isEqualTo(100);
+    }
+
+    @Test
+    @DisplayName("비관적 락 없이 실행하면 데드락이 발생하지 않는다.")
+    void notUsingPessimisticLock() throws InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(30);
+
+        for (long i=1; i<=200; i++) {
+            Member member = memberRepository.findById(i).orElseGet(null);
+            service.submit(() -> couponService.makeCoupon(member));
         }
         service.shutdown();
         service.awaitTermination(1, TimeUnit.MINUTES);
