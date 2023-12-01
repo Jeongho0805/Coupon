@@ -20,5 +20,4 @@ public class CouponInventory {
     public void plusCount() {
         this.remainingCoupons++;
     }
-
 }

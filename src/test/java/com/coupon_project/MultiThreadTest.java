@@ -8,9 +8,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import org.springframework.dao.OptimisticLockingFailureException;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+import java.util.concurrent.*;
 
 @SpringBootTest
 public class MultiThreadTest {
@@ -82,18 +85,43 @@ public class MultiThreadTest {
     }
 
     @Test
-    @DisplayName("비관적 락 없이 실행하면 데드락이 발생하지 않는다.")
-    void notUsingPessimisticLock() throws InterruptedException {
+    @DisplayName("낙관적락 테스트")
+    void usingOptimisticLock() throws InterruptedException {
         ExecutorService service = Executors.newFixedThreadPool(30);
 
-        for (long i=1; i<=200; i++) {
+        int loopSize = 2000;
+        CountDownLatch latch = new CountDownLatch(loopSize);
+        for (long i=1; i<=loopSize; i++) {
             Member member = memberRepository.findById(i).orElseGet(null);
-            service.submit(() -> couponServiceV4.issueCoupon(member));
+            service.submit(() -> couponServiceV4.issueCoupon());
+            latch.countDown();
         }
         service.shutdown();
-        service.awaitTermination(1, TimeUnit.MINUTES);
+        latch.await();
 
         Long couponCount = couponRepository.count();
         Assertions.assertThat(couponCount).isEqualTo(100);
+    }
+
+    @Test
+    void optimisticLockTest() throws InterruptedException {
+
+        ExecutorService service = Executors.newFixedThreadPool(3);
+        Future<?> future1 = service.submit(
+                () -> couponServiceV4.issueCoupon());
+        Future<?> future2 = service.submit(
+                () -> couponServiceV4.issueCoupon());
+        Future<?> future3 = service.submit(
+                () -> couponServiceV4.issueCoupon());
+        Exception result = new Exception();
+        try {
+            future1.get();
+            future2.get();
+            future3.get();
+        } catch (ExecutionException e) {
+            result = (Exception) e.getCause();
+        }
+        assertTrue(result instanceof OptimisticLockingFailureException);
+        System.out.println(result.getClass());
     }
 }
