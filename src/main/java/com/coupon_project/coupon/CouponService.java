@@ -17,7 +17,7 @@ public class CouponService {
 
     @Transactional
     public String issueCoupon(Member member) {
-        long count = couponRepository.countWithPessimisticLock();
+        long count = couponRepository.count();
         log.info("count => {}", count);
         if (count >= MAX_COUNT) {
             throw new CouponException("모든 쿠폰이 소진되었습니다.");

@@ -19,23 +19,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CouponServiceV4 {
 
-    private final static int MAX_COUNT = 100;
+    private final static int MAX_COUNT = 10000;
 
     private final CouponRepository couponRepository;
 
     private final CouponInventoryRepository couponInventoryRepository;
 
     @Transactional
-    public String issueCoupon() {
-        try {
-            CouponInventory couponInventory = couponInventoryRepository.findCouponInventoryById(1L);
-            couponInventory.plusCount();
-            return null;
-        } catch (OptimisticLockingFailureException e) {
-            log.info("에러 발생");
-            log.info("message = {}", e.getMessage());
+    public String issueCoupon(Member member) {
+        CouponInventory couponInventory = couponInventoryRepository.findCouponInventoryById(1L);
+        int count = couponInventory.getRemainingCoupons();
+        if (count >= MAX_COUNT) {
+            throw new CouponException("모든 쿠폰이 소진되었습니다.");
         }
-        return null;
+        if (!member.getCoupons().isEmpty()) {
+            throw new CouponException("쿠폰 중복 발급은 불가능합니다.");
+        }
+        String couponCode = makeCoupon(member);
+        couponInventory.plusCount();
+        return couponCode;
     }
 
     @Transactional

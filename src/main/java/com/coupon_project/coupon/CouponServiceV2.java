@@ -13,7 +13,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CouponServiceV2 {
 
-    private final static int MAX_COUNT = 100;
+    private final static int MAX_COUNT = 10000;
     private final CouponRepository couponRepository;
     private final CouponInventoryRepository couponInventoryRepository;
 
