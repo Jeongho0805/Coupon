@@ -1,5 +1,6 @@
 package com.coupon_project.aop;
 
+import com.coupon_project.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -22,6 +23,9 @@ public class DistributionLock {
 
     @Around("@annotation(Lock)")
     public Object getLock(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object[] args = joinPoint.getArgs();
+        Member member = (Member) args[0];
+        log.info("Args => {}", member.getId());
         RLock rLock = redissonClient.getLock("coupon"); // (1)
         try {
             boolean isAvailable = rLock.tryLock(100000, 100000, TimeUnit.SECONDS);
