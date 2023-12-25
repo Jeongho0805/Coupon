@@ -61,12 +61,13 @@ public class MultiThreadTest {
         CountDownLatch latch = new CountDownLatch(loopSize);
         for (long i=1; i<=loopSize; i++) {
             Member member = memberRepository.findById(i).orElseGet(null);
-            service.submit(() -> couponServiceV2.issueCoupon(member));
-            latch.countDown();
+            service.submit(() -> {
+                couponServiceV2.issueCoupon(member);
+                latch.countDown();
+            });
         }
         service.shutdown();
         latch.await();
-
         Long couponCount = couponRepository.count();
         Assertions.assertThat(couponCount).isEqualTo(10000);
     }
@@ -117,6 +118,29 @@ public class MultiThreadTest {
             Member member = memberRepository.findById(i).orElseGet(null);
             service.submit(() -> couponServiceV4Facade.issueCoupon(member));
             latch.countDown();
+        }
+        service.shutdown();
+        latch.await();
+
+
+        Long couponCount = couponRepository.count();
+        Assertions.assertThat(couponCount).isEqualTo(100);
+    }
+
+
+    @Test
+    @DisplayName("redisson 분산락 환경 동시성 테스트")
+    void redissonDistributionLock() throws InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(30);
+
+        int loopSize = 100;
+        CountDownLatch latch = new CountDownLatch(loopSize);
+        for (long i=1; i<=loopSize; i++) {
+            Member member = memberRepository.findById(i).orElseGet(null);
+            service.submit(() -> {
+                couponService.issueCoupon(member);
+                latch.countDown();
+            });
         }
         service.shutdown();
         latch.await();

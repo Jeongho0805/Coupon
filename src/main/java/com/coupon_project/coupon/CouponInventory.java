@@ -14,8 +14,8 @@ public class CouponInventory {
 
     private int remainingCoupons;
 
-    @Version
-    private Integer version;
+//    @Version
+//    private Integer version;
 
     public void plusCount() {
         this.remainingCoupons++;

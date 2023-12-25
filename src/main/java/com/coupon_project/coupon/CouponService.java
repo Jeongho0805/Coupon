@@ -1,5 +1,6 @@
 package com.coupon_project.coupon;
 
+import com.coupon_project.aop.Lock;
 import com.coupon_project.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ public class CouponService {
     private final static int MAX_COUNT = 100;
     private final CouponRepository couponRepository;
 
+    @Lock
     @Transactional
     public String issueCoupon(Member member) {
         long count = couponRepository.count();
